@@ -1,0 +1,309 @@
+/* style.css
+   Minimalis, hitam-putih, responsive.
+   - default: mobile-first
+   - two-column layout on desktop
+   - easy tuning via CSS variables
+*/
+
+/* =========================
+   Theme variables
+   ========================= */
+:root{
+  --bg: #000;           /* background */
+  --text: #fff;         /* main text */
+  --muted: #bdbdbd;     /* secondary text */
+  --accent: #fff;       /* links / accents (kept white for contrast) */
+  --maxw: 980px;        /* content max width on large screens */
+  --gap: 1.25rem;
+  --base-size: 18px;    /* default body font size (can be toggled by JS) */
+  --scale: 1.05;        /* small scale for headings */
+  --radius: 6px;
+  --line-height: 1.7;
+}
+
+/* font-size toggles (JS can set body.dataset.font = 'small'|'large') */
+body[data-font="small"]{ --base-size: 16px; }
+body[data-font="large"]{ --base-size: 20px; }
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans";
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  font-size:var(--base-size);
+  line-height:var(--line-height);
+  -webkit-text-size-adjust:100%;
+}
+
+/* =========================
+   Utility / Accessibility
+   ========================= */
+.container{
+  width:calc(100% - 2rem);
+  max-width:var(--maxw);
+  margin:1.5rem auto;
+  padding:0;
+}
+
+.skip-link{
+  position:absolute;
+  left:-9999px;
+  top:auto;
+  width:1px;
+  height:1px;
+  overflow:hidden;
+}
+.skip-link:focus{
+  left:1rem;
+  top:1rem;
+  width:auto;
+  height:auto;
+  padding:.5rem .75rem;
+  background:var(--text);
+  color:var(--bg);
+  border-radius:4px;
+  z-index:999;
+}
+
+/* visually hidden class for labels */
+.visually-hidden{
+  position:absolute !important;
+  height:1px; width:1px;
+  overflow:hidden;
+  clip:rect(1px,1px,1px,1px);
+  white-space:nowrap;
+}
+
+/* Link and focus styles */
+a{ color:var(--accent); text-decoration:none; outline:none; }
+a:focus, button:focus { outline:3px solid rgba(255,255,255,0.06); outline-offset:3px; }
+button{ background:transparent; color:var(--text); border:1px solid rgba(255,255,255,0.06); padding:.35rem .6rem; border-radius:6px; cursor:pointer; }
+
+/* =========================
+   Header / Nav
+   ========================= */
+.site-header{ border-bottom:1px solid rgba(255,255,255,0.06); padding:1rem 0; background:transparent; }
+.header-inner{
+  display:flex;
+  gap:var(--gap);
+  align-items:center;
+  justify-content:space-between;
+}
+
+/* brand */
+.brand .site-title{
+  margin:0;
+  font-size:1.05rem;
+  font-weight:600;
+  letter-spacing:0.2px;
+}
+.brand .site-tagline{
+  margin:0;
+  color:var(--muted);
+  font-size:0.86rem;
+  margin-top:.15rem;
+}
+
+/* nav */
+.main-nav{ display:flex; align-items:center; gap:1rem; }
+#nav-toggle{ display:inline-block; background:transparent; border:1px solid rgba(255,255,255,0.06); padding:.4rem .6rem; border-radius:6px; }
+
+/* nav list default hidden on mobile; toggled by button attribute */
+#nav-list{
+  list-style:none;
+  margin:0;
+  padding:0;
+  display:none;           /* mobile: hidden */
+  gap:0.6rem;
+}
+#nav-list li{ margin:0; }
+#nav-list a{
+  display:inline-block;
+  padding:.45rem .6rem;
+  border-radius:6px;
+  color:var(--text);
+  font-size:0.95rem;
+}
+#nav-toggle[aria-expanded="true"] + #nav-list{ display:block; margin-top:.75rem; }
+
+/* On desktop, always show nav inline */
+@media (min-width:700px){
+  .header-inner{ align-items:flex-end; }
+  #nav-toggle{ display:none; }
+  #nav-list{ display:flex !important; align-items:center; }
+  #nav-list a{ padding:.3rem .6rem; }
+}
+
+/* =========================
+   Toolbar: search + controls
+   ========================= */
+.toolbar{
+  display:flex;
+  gap:var(--gap);
+  align-items:center;
+  justify-content:space-between;
+  padding:.75rem 0;
+  border-bottom:1px solid rgba(255,255,255,0.04);
+}
+
+.search-form{ flex:1; min-width:0; }
+.search-form input[type="search"]{
+  width:100%;
+  padding:.6rem .8rem;
+  border-radius:8px;
+  border:1px solid rgba(255,255,255,0.06);
+  background:transparent;
+  color:var(--text);
+  font-size:1rem;
+}
+
+/* controls group */
+.controls{ display:flex; gap:.5rem; align-items:center; margin-left:1rem; }
+.control-group button{ margin-left:.25rem; }
+
+/* On small screens stack toolbar */
+@media (max-width:520px){
+  .toolbar{ flex-direction:column; align-items:stretch; gap:.6rem; }
+  .controls{ justify-content:space-between; }
+}
+
+/* =========================
+   Page layout: main + sidebar
+   ========================= */
+.page{ display:block; margin-top:1.25rem; }
+
+/* Mobile: posts full width, sidebar below */
+.main-content{ margin-bottom:2rem; }
+.sidebar{ margin-top:1.25rem; }
+
+/* Desktop: two-column */
+@media (min-width:900px){
+  .page{
+    display:grid;
+    grid-template-columns: 1fr 320px;
+    gap:2rem;
+    align-items:start;
+  }
+  .sidebar{ margin-top:0; }
+}
+
+/* =========================
+   Posts list / cards
+   ========================= */
+.posts{ display:flex; flex-direction:column; gap:1rem; }
+
+/* Post card */
+.post-card{
+  padding:1rem;
+  border-radius:8px;
+  background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  border:1px solid rgba(255,255,255,0.03);
+  transition:transform .12s ease, box-shadow .12s ease;
+}
+.post-card:hover{ transform: translateY(-4px); box-shadow:0 6px 18px rgba(0,0,0,0.6); }
+
+.post-title{ margin:.05rem 0 .35rem 0; font-size:1.05rem; font-weight:600; transform-origin:left; }
+.post-meta{ color:var(--muted); font-size:0.9rem; margin-bottom:.6rem; }
+.post-excerpt{ margin:0; color:var(--muted); font-size:0.98rem; }
+
+/* make titles slightly larger on wider screens */
+@media (min-width:700px){
+  .post-title{ font-size:1.12rem; }
+}
+
+/* =========================
+   Pagination
+   ========================= */
+.pagination{
+  display:flex;
+  gap:.75rem;
+  align-items:center;
+  justify-content:center;
+  margin-top:1.25rem;
+}
+.pagination button{
+  padding:.5rem .75rem;
+  border-radius:8px;
+  border:1px solid rgba(255,255,255,0.06);
+  background:transparent;
+}
+
+/* page-info */
+#page-info{ color:var(--muted); font-size:0.95rem; }
+
+/* =========================
+   Sidebar widgets
+   ========================= */
+.widget{ padding:.85rem; border-radius:8px; background:transparent; border:1px solid rgba(255,255,255,0.03); margin-bottom:1rem; }
+.widget h3{ margin:0 0 .5rem 0; font-size:1rem; }
+.tag-list{ display:flex; flex-wrap:wrap; gap:.4rem; list-style:none; margin:0; padding:0; }
+.tag-list button{
+  font-size:0.86rem;
+  padding:.35rem .5rem;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,0.04);
+  background:transparent;
+  cursor:pointer;
+}
+
+/* recent posts list */
+.recent-list{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:.5rem; }
+.recent-list a{ color:var(--text); font-size:0.95rem; }
+
+/* =========================
+   Footer
+   ========================= */
+.site-footer{ border-top:1px solid rgba(255,255,255,0.04); padding:1rem 0; margin-top:2rem; }
+.footer-inner{ display:flex; gap:1rem; align-items:center; justify-content:space-between; flex-wrap:wrap; }
+.footer-nav a{ color:var(--muted); font-size:0.95rem; margin-right:.5rem; }
+
+/* copyright */
+.site-footer p{ margin:0; color:var(--muted); font-size:0.9rem; }
+
+/* =========================
+   Post page helpers (for posts/*.html)
+   ========================= */
+.post{
+  padding:1rem;
+}
+.post header h1{ font-size:1.4rem; margin-bottom:.35rem; }
+.post .post-content{ margin-top:1rem; font-size:1.02rem; line-height:1.85; color:var(--text); }
+.post .post-content p{ margin:0 0 1rem 0; }
+.pre, pre.poem, .poem{ font-family: ui-serif, Georgia, "Times New Roman", serif; white-space:pre-wrap; margin:0 0 1rem 0; }
+
+/* link inside post */
+.post a{ color:var(--accent); text-decoration:underline; }
+
+/* =========================
+   Small screens tweaks
+   ========================= */
+@media (max-width:420px){
+  :root{ --gap: .9rem; }
+  .brand .site-title{ font-size:1rem; }
+  .brand .site-tagline{ font-size:0.82rem; }
+  button{ padding:.36rem .5rem; }
+}
+
+/* =========================
+   Print-friendly
+   ========================= */
+@media print{
+  :root{ --bg: #fff; --text: #000; }
+  body{ background:#fff; color:#000; }
+  header, .toolbar, .sidebar, .site-footer, .pagination, #nav-toggle { display:none !important; }
+  .container{ width:100%; margin:0; padding:0; }
+  a::after{ content: " (" attr(href) ")"; font-size:85%; }
+}
+
+/* =========================
+   Small niceties: focus, disabled states
+   ========================= */
+button[disabled], button[aria-disabled="true"]{
+  opacity:.45; cursor:not-allowed;
+}
+
+/* End of style.css */
