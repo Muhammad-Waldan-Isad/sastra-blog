@@ -1,35 +1,65 @@
-/* style.css
-   Minimalis, hitam-putih, responsive.
-   - default: mobile-first
-   - two-column layout on desktop
-   - easy tuning via CSS variables
-*/
+/* ==========================================================================
+   style.css — Pastel Sunrise theme (full replacement)
+   - Pastel accents (FFD6A5 / 9BF6FF)
+   - Soft warm background (tidak hitam penuh)
+   - Responsive, accessible, with small animations
+   - Drop-in: replace existing style.css
+   ========================================================================== */
 
 /* =========================
-   Theme variables
+   Theme variables (edit di sini jika perlu)
    ========================= */
 :root{
-  --bg: #000;           /* background */
-  --text: #fff;         /* main text */
-  --muted: #bdbdbd;     /* secondary text */
-  --accent: #fff;       /* links / accents (kept white for contrast) */
-  --maxw: 980px;        /* content max width on large screens */
+  /* Page tone */
+  --bg: #fffaf6;              /* page page background (soft warm) */
+  --surface: #ffffff;         /* card / panel background */
+  --text: #0b1220;            /* main text (dark for contrast on light bg) */
+  --muted: #9ea3a6;           /* metadata, secondary text */
+
+  /* Pastel Sunrise accents */
+  --accent: #FFD6A5;          /* accent-primary (pastel peach) */
+  --accent-2: #9BF6FF;        /* accent-secondary (soft cyan) */
+
+  /* RGB versions for rgba usage */
+  --accent-rgb: 255,214,165;
+  --accent-2-rgb: 155,246,255;
+
+  /* Text color to use on accent backgrounds (high contrast) */
+  --accent-contrast: #000000; /* black on pastel */
+
+  /* Spacing / layout */
+  --maxw: 980px;
   --gap: 1.25rem;
-  --base-size: 18px;    /* default body font size (can be toggled by JS) */
-  --scale: 1.05;        /* small scale for headings */
-  --radius: 6px;
+  --base-size: 18px;
   --line-height: 1.7;
+
+  /* subtle opacities */
+  --accent-bg-alpha: 0.12;
+  --border-alpha: 0.08;
+
+  /* radius */
+  --radius: 10px;
+
+  /* animation timing */
+  --fast: 120ms;
+  --med: 220ms;
+  --slow: 350ms;
 }
 
 /* font-size toggles (JS can set body.dataset.font = 'small'|'large') */
 body[data-font="small"]{ --base-size: 16px; }
 body[data-font="large"]{ --base-size: 20px; }
 
+/* =========================
+   Base / Global
+   ========================= */
 *{box-sizing:border-box}
 html,body{height:100%}
 body{
   margin:0;
-  background:var(--bg);
+  background:
+    linear-gradient(180deg, rgba(255, 250, 246, 0.8), rgba(255, 247, 240, 0.96)),
+    var(--bg);
   color:var(--text);
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans";
   -webkit-font-smoothing:antialiased;
@@ -37,18 +67,18 @@ body{
   font-size:var(--base-size);
   line-height:var(--line-height);
   -webkit-text-size-adjust:100%;
+  transition: background-color var(--med) ease, color var(--med) ease;
 }
 
-/* =========================
-   Utility / Accessibility
-   ========================= */
+/* page container */
 .container{
   width:calc(100% - 2rem);
   max-width:var(--maxw);
-  margin:1.5rem auto;
+  margin:1.75rem auto;
   padding:0;
 }
 
+/* Skip-link for keyboard users */
 .skip-link{
   position:absolute;
   left:-9999px;
@@ -63,13 +93,13 @@ body{
   width:auto;
   height:auto;
   padding:.5rem .75rem;
-  background:var(--text);
-  color:var(--bg);
-  border-radius:4px;
+  background:var(--accent);
+  color:var(--accent-contrast);
+  border-radius:6px;
   z-index:999;
 }
 
-/* visually hidden class for labels */
+/* visually hidden helper */
 .visually-hidden{
   position:absolute !important;
   height:1px; width:1px;
@@ -78,15 +108,50 @@ body{
   white-space:nowrap;
 }
 
-/* Link and focus styles */
-a{ color:var(--accent); text-decoration:none; outline:none; }
-a:focus, button:focus { outline:3px solid rgba(255,255,255,0.06); outline-offset:3px; }
-button{ background:transparent; color:var(--text); border:1px solid rgba(255,255,255,0.06); padding:.35rem .6rem; border-radius:6px; cursor:pointer; }
+/* Links */
+a{ color:var(--accent); text-decoration:none; transition: color var(--fast) ease, text-decoration var(--fast) ease; }
+a:hover, a:focus{ color:var(--accent-2); text-decoration:underline; }
+
+/* Buttons base (used by toolbar and others) */
+button, .btn{
+  background: var(--accent);
+  color: var(--accent-contrast);
+  border: 1px solid rgba(var(--accent-rgb), calc(var(--border-alpha) * 1.4));
+  padding: .5rem .8rem;
+  border-radius: .6rem;
+  cursor:pointer;
+  font: inherit;
+  transition: transform var(--fast) ease, box-shadow var(--fast) ease, filter var(--fast) ease;
+  box-shadow: 0 1px 0 rgba(16,24,40,0.02);
+}
+button:hover, .btn:hover{ transform: translateY(-2px); filter:brightness(0.98); box-shadow:0 6px 20px rgba(16,24,40,0.04); }
+
+/* Secondary action */
+.btn-secondary{
+  background: transparent;
+  color: var(--accent-2);
+  border: 1px solid rgba(var(--accent-2-rgb), calc(var(--border-alpha) * 1.4));
+}
+.btn-secondary:hover{ background: rgba(var(--accent-2-rgb), 0.10); color: var(--accent-contrast); }
+
+/* focus visible */
+:focus{ outline: 3px solid rgba(var(--accent-2-rgb), 0.14); outline-offset: 3px; }
+
+/* small disabled style */
+button[disabled], button[aria-disabled="true"]{
+  opacity: .5; cursor: not-allowed;
+}
 
 /* =========================
    Header / Nav
    ========================= */
-.site-header{ border-bottom:1px solid rgba(255,255,255,0.06); padding:1rem 0; background:transparent; }
+.site-header{
+  background: linear-gradient(180deg, rgba(255,255,255,0.55), rgba(255,255,255,0.35));
+  border-radius: calc(var(--radius) * 1.1);
+  padding: .9rem;
+  margin-bottom: .9rem;
+  box-shadow: 0 6px 18px rgba(16,24,40,0.04);
+}
 .header-inner{
   display:flex;
   gap:var(--gap);
@@ -94,48 +159,54 @@ button{ background:transparent; color:var(--text); border:1px solid rgba(255,255
   justify-content:space-between;
 }
 
-/* brand */
+/* Brand */
 .brand .site-title{
   margin:0;
   font-size:1.05rem;
-  font-weight:600;
+  font-weight:700;
   letter-spacing:0.2px;
+  color:var(--text);
 }
 .brand .site-tagline{
   margin:0;
   color:var(--muted);
-  font-size:0.86rem;
-  margin-top:.15rem;
+  font-size:0.88rem;
+  margin-top:.12rem;
 }
 
-/* nav */
+/* Nav */
 .main-nav{ display:flex; align-items:center; gap:1rem; }
-#nav-toggle{ display:inline-block; background:transparent; border:1px solid rgba(255,255,255,0.06); padding:.4rem .6rem; border-radius:6px; }
-
-/* nav list default hidden on mobile; toggled by button attribute */
+#nav-toggle{
+  display:inline-block;
+  background:transparent;
+  border:1px solid rgba(11,18,32,0.04);
+  padding:.45rem .7rem;
+  border-radius:8px;
+  color:var(--text);
+}
 #nav-list{
   list-style:none;
   margin:0;
   padding:0;
-  display:none;           /* mobile: hidden */
+  display:none;
   gap:0.6rem;
 }
 #nav-list li{ margin:0; }
 #nav-list a{
   display:inline-block;
-  padding:.45rem .6rem;
+  padding:.35rem .5rem;
   border-radius:6px;
   color:var(--text);
   font-size:0.95rem;
 }
-#nav-toggle[aria-expanded="true"] + #nav-list{ display:block; margin-top:.75rem; }
+#nav-toggle[aria-expanded="true"] + #nav-list{ display:block; margin-top:.6rem; }
 
-/* On desktop, always show nav inline */
+/* Desktop: show nav inline */
 @media (min-width:700px){
   .header-inner{ align-items:flex-end; }
   #nav-toggle{ display:none; }
   #nav-list{ display:flex !important; align-items:center; }
-  #nav-list a{ padding:.3rem .6rem; }
+  #nav-list a{ padding:.25rem .5rem; }
 }
 
 /* =========================
@@ -146,39 +217,39 @@ button{ background:transparent; color:var(--text); border:1px solid rgba(255,255
   gap:var(--gap);
   align-items:center;
   justify-content:space-between;
-  padding:.75rem 0;
-  border-bottom:1px solid rgba(255,255,255,0.04);
+  padding:.8rem 0;
+  margin-bottom: .8rem;
 }
-
 .search-form{ flex:1; min-width:0; }
 .search-form input[type="search"]{
   width:100%;
-  padding:.6rem .8rem;
-  border-radius:8px;
-  border:1px solid rgba(255,255,255,0.06);
-  background:transparent;
+  padding:.6rem .9rem;
+  border-radius:10px;
+  border:1px solid rgba(16,24,40,0.06);
+  background: linear-gradient(180deg, rgba(255,255,255,0.5), rgba(250,250,250,0.5));
   color:var(--text);
   font-size:1rem;
+  transition: box-shadow var(--fast) ease, transform var(--fast) ease;
 }
+.search-form input[type="search"]:focus{ box-shadow: 0 8px 30px rgba(11,18,32,0.06); transform: translateY(-1px); }
 
 /* controls group */
-.controls{ display:flex; gap:.5rem; align-items:center; margin-left:1rem; }
-.control-group button{ margin-left:.25rem; }
+.controls{ display:flex; gap:.6rem; align-items:center; margin-left:1rem; }
 
-/* On small screens stack toolbar */
+/* small screens: stack toolbar */
 @media (max-width:520px){
   .toolbar{ flex-direction:column; align-items:stretch; gap:.6rem; }
   .controls{ justify-content:space-between; }
 }
 
 /* =========================
-   Page layout: main + sidebar
+   Page Layout: main + sidebar
    ========================= */
-.page{ display:block; margin-top:1.25rem; }
+.page{ display:block; margin-top:1rem; }
 
 /* Mobile: posts full width, sidebar below */
 .main-content{ margin-bottom:2rem; }
-.sidebar{ margin-top:1.25rem; }
+.sidebar{ margin-top:1rem; }
 
 /* Desktop: two-column */
 @media (min-width:900px){
@@ -194,26 +265,59 @@ button{ background:transparent; color:var(--text); border:1px solid rgba(255,255
 /* =========================
    Posts list / cards
    ========================= */
-.posts{ display:flex; flex-direction:column; gap:1rem; }
+.posts{
+  display:flex;
+  flex-direction:column;
+  gap:1rem;
+}
+
+/* animation keyframes */
+@keyframes fadeInUp {
+  from { opacity:0; transform: translateY(8px); }
+  to   { opacity:1; transform: translateY(0); }
+}
 
 /* Post card */
 .post-card{
-  padding:1rem;
-  border-radius:8px;
-  background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-  border:1px solid rgba(255,255,255,0.03);
-  transition:transform .12s ease, box-shadow .12s ease;
+  padding:1.05rem;
+  border-radius:12px;
+  background: var(--surface);
+  border: 1px solid rgba(11,18,32,0.04);
+  transition: transform var(--med) ease, box-shadow var(--med) ease, border-color var(--med) ease;
+  box-shadow: 0 6px 18px rgba(16,24,40,0.03);
+  animation: fadeInUp 320ms ease both;
 }
-.post-card:hover{ transform: translateY(-4px); box-shadow:0 6px 18px rgba(0,0,0,0.6); }
+.post-card:hover{
+  transform: translateY(-6px);
+  box-shadow: 0 18px 40px rgba(16,24,40,0.06);
+  border-color: rgba(var(--accent-rgb), calc(var(--border-alpha) * 1.8));
+}
 
-.post-title{ margin:.05rem 0 .35rem 0; font-size:1.05rem; font-weight:600; transform-origin:left; }
+/* Title & meta */
+.post-title{
+  margin:.05rem 0 .35rem 0;
+  font-size:1.06rem;
+  font-weight:700;
+  color:var(--text);
+  transition: color var(--fast) ease, transform var(--fast) ease;
+}
 .post-meta{ color:var(--muted); font-size:0.9rem; margin-bottom:.6rem; }
-.post-excerpt{ margin:0; color:var(--muted); font-size:0.98rem; }
+.post-excerpt{ margin:0; color:var(--text); opacity:0.88; }
 
-/* make titles slightly larger on wider screens */
-@media (min-width:700px){
-  .post-title{ font-size:1.12rem; }
+/* Title hover accent */
+.post-card:hover .post-title{ color: rgba(var(--accent-rgb), 1); transform: translateY(-2px); }
+
+/* subtle underline on links inside cards */
+.post-card a{ text-decoration:none; position:relative; }
+.post-card a::after{
+  content: "";
+  position:absolute;
+  left:0; bottom:-2px;
+  width:0%; height:2px;
+  background: linear-gradient(90deg, rgba(var(--accent-rgb),0.95), rgba(var(--accent-2-rgb),0.95));
+  transition: width var(--fast) ease;
 }
+.post-card a:hover::after{ width:100%; }
 
 /* =========================
    Pagination
@@ -227,72 +331,102 @@ button{ background:transparent; color:var(--text); border:1px solid rgba(255,255
 }
 .pagination button{
   padding:.5rem .75rem;
-  border-radius:8px;
-  border:1px solid rgba(255,255,255,0.06);
+  border-radius:10px;
+  border:1px solid rgba(11,18,32,0.05);
   background:transparent;
+  color:var(--text);
 }
-
-/* page-info */
 #page-info{ color:var(--muted); font-size:0.95rem; }
 
 /* =========================
    Sidebar widgets
    ========================= */
-.widget{ padding:.85rem; border-radius:8px; background:transparent; border:1px solid rgba(255,255,255,0.03); margin-bottom:1rem; }
-.widget h3{ margin:0 0 .5rem 0; font-size:1rem; }
-.tag-list{ display:flex; flex-wrap:wrap; gap:.4rem; list-style:none; margin:0; padding:0; }
+.widget{
+  padding:.85rem;
+  border-radius:12px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.8), rgba(255,255,255,0.95));
+  border:1px solid rgba(11,18,32,0.04);
+  margin-bottom:1rem;
+  box-shadow: 0 6px 18px rgba(16,24,40,0.02);
+}
+.widget h3{ margin:0 0 .5rem 0; font-size:1rem; color:var(--text); }
+.tag-list{ display:flex; flex-wrap:wrap; gap:.5rem; list-style:none; margin:0; padding:0; }
 .tag-list button{
   font-size:0.86rem;
-  padding:.35rem .5rem;
+  padding:.35rem .6rem;
   border-radius:999px;
-  border:1px solid rgba(255,255,255,0.04);
-  background:transparent;
-  cursor:pointer;
+  border:1px solid rgba(var(--accent-rgb), calc(var(--border-alpha) * 1.6));
+  background: rgba(var(--accent-rgb), var(--accent-bg-alpha));
+  color:var(--accent);
+  transition: background var(--fast) ease, color var(--fast) ease, transform var(--fast) ease;
+}
+.tag-list button:hover{
+  background: rgba(var(--accent-2-rgb), 0.12);
+  color: var(--accent-2);
+  transform: translateY(-2px);
 }
 
 /* recent posts list */
-.recent-list{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:.5rem; }
+.recent-list{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:.45rem; }
 .recent-list a{ color:var(--text); font-size:0.95rem; }
+
+/* subscribe / contact */
+.subscribe p{ margin:.25rem 0; color:var(--muted); }
 
 /* =========================
    Footer
    ========================= */
-.site-footer{ border-top:1px solid rgba(255,255,255,0.04); padding:1rem 0; margin-top:2rem; }
-.footer-inner{ display:flex; gap:1rem; align-items:center; justify-content:space-between; flex-wrap:wrap; }
-.footer-nav a{ color:var(--muted); font-size:0.95rem; margin-right:.5rem; }
+.site-footer{
+  margin-top:1.8rem;
+  padding:1rem 0;
+  border-top: 1px solid rgba(11,18,32,0.03);
+}
+.footer-inner{
+  display:flex; gap:1rem; align-items:center; justify-content:space-between; flex-wrap:wrap;
+}
+.footer-nav a{ color:var(--muted); font-size:0.95rem; margin-right:.6rem; }
+.footer-nav a:hover{ color: var(--accent); }
 
-/* copyright */
+/* copyright small */
 .site-footer p{ margin:0; color:var(--muted); font-size:0.9rem; }
 
 /* =========================
-   Post page helpers (for posts/*.html)
+   Post page helpers (posts/*.html)
    ========================= */
 .post{
   padding:1rem;
+  background: transparent;
 }
-.post header h1{ font-size:1.4rem; margin-bottom:.35rem; }
+.post header h1{ font-size:1.35rem; margin-bottom:.35rem; color:var(--text); }
 .post .post-content{ margin-top:1rem; font-size:1.02rem; line-height:1.85; color:var(--text); }
 .post .post-content p{ margin:0 0 1rem 0; }
-.pre, pre.poem, .poem{ font-family: ui-serif, Georgia, "Times New Roman", serif; white-space:pre-wrap; margin:0 0 1rem 0; }
+.pre, pre.poem, .poem{ font-family: ui-serif, Georgia, "Times New Roman", serif; white-space:pre-wrap; margin:0 0 1rem 0; color:var(--text); }
 
-/* link inside post */
+/* links inside post */
 .post a{ color:var(--accent); text-decoration:underline; }
+.post a:hover{ color:var(--accent-2); }
 
 /* =========================
    Small screens tweaks
    ========================= */
 @media (max-width:420px){
-  :root{ --gap: .9rem; }
+  :root{ --gap: .9rem; --radius:8px; }
   .brand .site-title{ font-size:1rem; }
   .brand .site-tagline{ font-size:0.82rem; }
-  button{ padding:.36rem .5rem; }
+  button{ padding:.36rem .55rem; }
+  .container{ margin:1rem auto; width:calc(100% - 1.5rem); }
+  .post-card{ padding:.9rem; }
 }
 
 /* =========================
    Print-friendly
    ========================= */
 @media print{
-  :root{ --bg: #fff; --text: #000; }
+  :root{
+    --bg: #ffffff;
+    --surface: #fff;
+    --text: #000;
+  }
   body{ background:#fff; color:#000; }
   header, .toolbar, .sidebar, .site-footer, .pagination, #nav-toggle { display:none !important; }
   .container{ width:100%; margin:0; padding:0; }
@@ -300,10 +434,131 @@ button{ background:transparent; color:var(--text); border:1px solid rgba(255,255
 }
 
 /* =========================
-   Small niceties: focus, disabled states
+   Micro interactions / accessibility niceties
    ========================= */
-button[disabled], button[aria-disabled="true"]{
-  opacity:.45; cursor:not-allowed;
+/* gentle highlight for focused interactive elements */
+[tabindex]:focus, button:focus, a:focus{
+  box-shadow: 0 6px 20px rgba(11,18,32,0.06);
+}
+
+/* subtle pulsing for primary CTA on first view (non-intrusive) */
+@keyframes softPulse {
+  0%{ box-shadow: 0 0 0 0 rgba(var(--accent-rgb), 0.12); }
+  70%{ box-shadow: 0 0 0 8px rgba(var(--accent-rgb), 0); }
+  100%{ box-shadow: 0 0 0 0 rgba(var(--accent-rgb), 0); }
+}
+/* you can add .pulse class to an element via JS if needed */
+.pulse{
+  animation: softPulse 1.6s ease-in-out 1;
+}
+
+/* subtle icon color for controls */
+.icon{ color:var(--accent-2); }
+
+/* =========================
+   Tag, Kontak links, dan Select (dropdown) styling
+   Tambahkan ini di akhir style.css
+   ========================= */
+
+/* TAGS */
+.tag-list button{
+  /* sedikit lebih gelap teksnya untuk kontras */
+  color: var(--text) !important;
+  background: rgba(var(--accent-rgb), 0.18) !important; /* sedikit lebih pekat */
+  border: 1px solid rgba(var(--accent-rgb), 0.22) !important;
+  padding: .35rem .6rem;
+  font-weight: 600;
+  box-shadow: 0 1px 0 rgba(16,24,40,0.02);
+}
+.tag-list button:focus,
+.tag-list button:active{
+  transform: translateY(-2px);
+  outline: none;
+  box-shadow: 0 8px 22px rgba(16,24,40,0.06);
+}
+.tag-list button:hover{
+  background: rgba(var(--accent-2-rgb), 0.14) !important;
+  color: var(--accent-2) !important;
+}
+
+/* CONTACT LINKS (Instagram / Email) */
+.subscribe a,
+.subscribe a:link,
+.subscribe a:visited{
+  color: var(--text);
+  text-decoration: none;
+  font-weight: 600;
+}
+.subscribe a:hover,
+.subscribe a:focus{
+  color: var(--accent);
+  text-decoration: underline;
+}
+
+/* SELECT / DROPDOWN (filter-type) */
+#filter-type{
+  -webkit-appearance:none;
+  -moz-appearance:none;
+  appearance:none;
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid rgba(11,18,32,0.06);
+  padding: .48rem .9rem;
+  padding-right: 2.6rem; /* ruang untuk panah */
+  border-radius: .7rem;
+  box-shadow: 0 6px 20px rgba(11,18,32,0.03);
+  font-size: .95rem;
+  min-width:160px;
+  transition: box-shadow .18s ease, transform .12s ease;
+  background-image:
+    linear-gradient(45deg, transparent 50%, rgba(var(--accent-2-rgb),0.95) 50%),
+    linear-gradient(135deg, rgba(var(--accent-2-rgb),0.95) 50%, transparent 50%);
+  background-position: calc(100% - 1.1rem) 50%, calc(100% - 0.6rem) 50%;
+  background-size: .45em .45em;
+  background-repeat: no-repeat;
+}
+
+/* focus state untuk select */
+#filter-type:focus{
+  box-shadow: 0 12px 30px rgba(11,18,32,0.06);
+  outline: none;
+  transform: translateY(-1px);
+}
+
+/* styling opsi (tergantung browser; beberapa mobile mengabaikan) */
+#filter-type option{
+  background: var(--surface);
+  color: var(--text);
+  padding: .5rem 1rem;
+  border-bottom: 1px solid rgba(11,18,32,0.04);
+}
+
+/* jika browser menampilkan menu native, beri batas visual yang lebih bagus */
+#filter-type::-ms-expand{ display: none; }
+
+/* Jika ingin tampilan dropdown pada desktop lebih "card-like" saat focused (non-native fallback) */
+#filter-type:focus + .fake-dropdown,
+#filter-type[aria-expanded="true"] + .fake-dropdown{
+  display:block;
+}
+
+/* Small polish: jika ada ul list fallback (beberapa markup) */
+#nav-list.select-style, /* jika kamu pernah menambahkan kelas ini */ 
+#nav-list select{
+  border-radius: .6rem;
+  box-shadow: 0 8px 30px rgba(11,18,32,0.04);
+}
+
+/* Pastikan tag cloud di sidebar tetap terbaca di background widget */
+.sidebar .widget .tag-list button{
+  /* override bila ada aturan lain */
+  color: var(--text);
+}
+
+/* Small responsive tweak: beri space pada toolbar agar select tidak menimpa tombol font-size */
+@media (max-width:520px){
+  .controls{ gap:.4rem; }
+  #filter-type{ min-width: 140px; }
 }
 
 /* End of style.css */
