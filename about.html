@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Tentang — Ruang Cerita</title>
+  <meta name="description" content="Tentang penulis dan tujuan blog karya sastra — cerpen, puisi, dan tulisan pendek oleh Waldan." />
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Lewat ke konten utama</a>
+
+  <!-- Header / Nav (sesuai markup index.html agar styling konsisten) -->
+  <header class="site-header" role="banner">
+    <div class="header-inner container">
+      <div class="brand">
+        <a href="index.html" aria-label="Beranda — Nama Blog Karya Sastra">
+          <h1 class="site-title">Ruang Cerita</h1>
+        </a>
+        <p class="site-tagline">Cerpen, puisi, dan tulisan pendek.</p>
+      </div>
+
+      <nav class="main-nav" role="navigation" aria-label="Navigasi utama">
+        <button id="nav-toggle" aria-expanded="false" aria-controls="nav-list">Menu</button>
+        <ul id="nav-list" class="nav-list">
+          <li><a href="index.html">Beranda</a></li>
+          <li><a href="?type=cerpen" data-filter="cerpen">Cerpen</a></li>
+          <li><a href="?type=puisi" data-filter="puisi">Puisi</a></li>
+          <li><a href="?type=artikel" data-filter="artikel">Artikel</a></li>
+          <li><a href="about.html" aria-current="page">Tentang</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" class="container" role="main">
+    <article class="post" style="padding-top:0;">
+      <header>
+        <h1>Tentang</h1>
+        <div class="meta">Siapa di balik blog ini • Kontak & tujuan</div>
+      </header>
+
+      <section class="post-content">
+        <p>Halo. Nama saya <strong>Waldan</strong>. Blog ini adalah tempat saya menaruh cerpen, puisi, dan tulisan pendek yang lahir dari kebiasaan menulis kadang sedih, kadang ringan, selalu berusaha jujur.</p>
+
+        <p>Saya menulis karena percuma menyimpan kata sendirian. Di sini saya mencoba menjaga bahasa yang sederhana dan mudah dibaca, supaya siapa pun yang mampir bisa mendapat sesuatu nada, suasana, atau cuma secuil hiburan.</p>
+
+        <h3>Apa tujuan blog ini?</h3>
+        <ul>
+          <li>Mempublikasikan karya-karya pendek (cerpen, puisi, esai ringan).</li>
+          <li>Menjaga arsip tulisan yang mudah diakses lewat GitHub Pages.</li>
+          <li>Melayani pembaca yang suka cerita sederhana dan puitis.</li>
+        </ul>
+
+        <h3>Panduan singkat untuk pembaca</h3>
+        <p>Gunakan kotak <em>search</em> di halaman utama untuk mencari kata kunci atau tag. Klik kategori untuk memfilter jenis tulisan. Jika kamu mau membaca lebih lama, tombol A− / A+ berguna untuk mengatur ukuran teks.</p>
+
+        <h3>Ingin menghubungi / kirim tulisan?</h3>
+        <p>Untuk pertanyaan atau kiriman naskah pendek (non-komersial), kirim email ke <a href="mailto:muhammadwaldanisad.author@gmail.com">muhammadwaldanisad.author@gmail.com</a> atau DM di <a href="https://instagram.com/mwi_gaming" target="_blank" rel="noopener">Instagram</a>. Harap sertakan catatan singkat tentang naskah dan kontak balik.</p>
+
+        <h3>Catatan singkat</h3>
+        <p>Semua tulisan di sini di-host statis. Jika kamu teknis: file post berada di folder <code>/posts</code> dan indeks di <code>posts.json</code>. Kalau bukan teknis: cukup baca dan nikmati.</p>
+
+        <p style="margin-top:1.25rem;"><a href="index.html" class="btn btn-secondary">← Kembali ke Daftar Tulisan</a></p>
+      </section>
+
+      <footer>
+        <nav><small class="meta">Terakhir diperbarui: 7 Maret 2026</small></nav>
+      </footer>
+    </article>
+  </main>
+
+  <footer class="site-footer" role="contentinfo">
+    <div class="container footer-inner">
+      <nav class="footer-nav" aria-label="Footer links">
+        <a href="about.html">Tentang</a> |
+        <a href="/archive.html">Arsip</a> |
+        <a href="/rss.xml">RSS</a>
+      </nav>
+      <p class="meta">© <span id="year"></span> Nama Blog Karya Sastra</p>
+    </div>
+  </footer>
+
+  <script>
+    // Set copyright year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Basic nav-toggle behavior for mobile (mirip index.html)
+    const navToggle = document.getElementById('nav-toggle');
+    const navList = document.getElementById('nav-list');
+    if (navToggle && navList) {
+      navToggle.addEventListener('click', () => {
+        const expanded = navToggle.getAttribute('aria-expanded') === 'true';
+        navToggle.setAttribute('aria-expanded', String(!expanded));
+        navList.hidden = expanded;
+      });
+    }
+  </script>
+</body>
+</html>
