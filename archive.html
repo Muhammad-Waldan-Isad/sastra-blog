@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Arsip — Nama Blog Karya Sastra</title>
+  <meta name="description" content="Arsip tulisan — daftar lengkap cerpen, puisi, dan artikel." />
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Override kecil khusus halaman arsip: tampilkan sebagai daftar sederhana (tanpa kotak) -->
+  <style>
+    /* Agar spacing header/halaman konsisten dengan about.html */
+    .container { margin-top: 1rem; }
+
+    .post { padding-top: 0; }
+    .post header { margin-bottom: 0.5rem; }
+    .page-desc { margin-top: .25rem; color: var(--muted); }
+
+    /* Tahun */
+    .archive-year { margin-bottom: 0.85rem; }
+    .archive-year h2 {
+      margin: .6rem 0 .45rem 0;
+      font-size: 1.12rem;
+      color: var(--text);
+    }
+
+    /* Simple list: no cards, subtle separators */
+    .archive-list-simple{
+      list-style:none;
+      margin:0;
+      padding:0;
+      display:flex;
+      flex-direction:column;
+      gap:0;
+      border-radius:8px;
+      overflow:hidden;
+    }
+
+    .archive-list-simple li{
+      display:block;
+      padding:.82rem 0;
+      border-bottom:1px solid rgba(11,18,32,0.04);
+    }
+    /* remove last border */
+    .archive-list-simple li:last-child{ border-bottom: none; }
+
+    /* Link/title style */
+    .archive-link{
+      color:var(--text);
+      text-decoration:none;
+      font-weight:700;
+      font-size:1.02rem;
+    }
+    .archive-link:hover,
+    .archive-link:focus{
+      color: var(--accent);
+      text-decoration: underline;
+      outline: none;
+    }
+
+    /* Meta text after title, inline and muted */
+    .archive-meta-inline{
+      display:inline-block;
+      margin-left:.6rem;
+      color:var(--muted);
+      font-size:0.95rem;
+      font-weight:600;
+    }
+
+    /* Smaller secondary meta (date) slightly lighter */
+    .archive-meta-date{
+      color:var(--muted);
+      opacity:0.95;
+      margin-left:.35rem;
+      font-weight:500;
+    }
+
+    /* responsive tightening */
+    @media (max-width:520px){
+      .container{ margin-top:.9rem; }
+      .archive-link{ font-size:1rem; }
+      .archive-meta-inline{ display:block; margin-left:0.0rem; margin-top:.2rem; font-size:0.92rem; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">Lewat ke konten utama</a>
+
+  <!-- Header / Nav (konsisten) -->
+  <header class="site-header" role="banner">
+    <div class="header-inner container">
+      <div class="brand">
+        <a href="index.html" aria-label="Beranda — Nama Blog Karya Sastra">
+          <h1 class="site-title">Ruang Cerita</h1>
+        </a>
+        <p class="site-tagline">Cerpen, puisi, dan tulisan pendek</p>
+      </div>
+
+      <nav class="main-nav" role="navigation" aria-label="Navigasi utama">
+        <button id="nav-toggle" aria-expanded="false" aria-controls="nav-list">Menu</button>
+        <ul id="nav-list" class="nav-list">
+          <li><a href="index.html">Beranda</a></li>
+          <li><a href="?type=cerpen" data-filter="cerpen">Cerpen</a></li>
+          <li><a href="?type=puisi" data-filter="puisi">Puisi</a></li>
+          <li><a href="?type=artikel" data-filter="artikel">Artikel</a></li>
+          <li><a href="about.html">Tentang</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" class="container" role="main">
+    <article class="post">
+      <header>
+        <h1>Arsip Tulisan</h1>
+        <div class="meta">Semua tulisan yang pernah dipublikasikan • diurutkan berdasarkan tahun</div>
+      </header>
+
+      <section class="post-content">
+        <p class="page-desc">Daftar sederhana: <em>Judul, jenis bacaan, nama penulis, tanggal</em>. Klik judul untuk membuka tulisan.</p>
+
+        <!-- Archive output -->
+        <div id="archive-list" aria-live="polite"></div>
+      </section>
+
+      <footer>
+        <nav><a href="index.html">← Kembali</a></nav>
+      </footer>
+    </article>
+  </main>
+
+  <footer class="site-footer" role="contentinfo">
+    <div class="container footer-inner">
+      <nav class="footer-nav" aria-label="Footer links">
+        <a href="about.html">Tentang</a> |
+        <a href="archive.html">Arsip</a> |
+        <a href="/rss.xml">RSS</a>
+      </nav>
+      <p class="meta">© <span id="year"></span> Nama Blog Karya Sastra</p>
+    </div>
+  </footer>
+
+  <script>
+    // footer year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // nav toggle (sama seperti halaman lain)
+    (function(){
+      const navToggle = document.getElementById('nav-toggle');
+      const navList = document.getElementById('nav-list');
+      if (navToggle && navList) {
+        navToggle.addEventListener('click', () => {
+          const expanded = navToggle.getAttribute('aria-expanded') === 'true';
+          navToggle.setAttribute('aria-expanded', String(!expanded));
+          navList.hidden = expanded;
+        });
+      }
+    })();
+
+    // Render archive as simple list (Title, type, author, date)
+    (function(){
+      const OUT = document.getElementById('archive-list');
+
+      function fmtDate(d){
+        try {
+          const dt = new Date(d);
+          return dt.toLocaleDateString('id-ID', { day:'numeric', month:'long', year:'numeric' });
+        } catch(e){
+          return d;
+        }
+      }
+
+      function showEmpty(note){
+        OUT.innerHTML = `<div class="widget">${note}</div>`;
+      }
+
+      async function load(){
+        showEmpty('Memuat daftar tulisan…');
+        try {
+          const res = await fetch('posts.json', { cache: 'no-store' });
+          if (!res.ok) throw new Error('HTTP ' + res.status);
+          const posts = await res.json();
+          if (!Array.isArray(posts) || posts.length === 0) { showEmpty('Belum ada tulisan.'); return; }
+
+          // normalize & sort desc
+          const norm = posts.map(p => ({
+            title: p.title || 'Tanpa Judul',
+            date: p.date || '1970-01-01',
+            path: p.path || p.url || ('posts/' + (p.slug || 'post') + '.html'),
+            type: p.type || '',
+            author: p.author || ''
+          })).sort((a,b) => new Date(b.date) - new Date(a.date));
+
+          // group by year
+          const groups = {};
+          norm.forEach(item => {
+            const year = (item.date || '').slice(0,4) || 'Lainnya';
+            groups[year] = groups[year] || [];
+            groups[year].push(item);
+          });
+
+          // render
+          OUT.innerHTML = '';
+          const years = Object.keys(groups).sort((a,b) => b.localeCompare(a));
+          years.forEach(year => {
+            const sec = document.createElement('section');
+            sec.className = 'archive-year';
+
+            const h = document.createElement('h2');
+            h.textContent = year;
+            sec.appendChild(h);
+
+            const ul = document.createElement('ul');
+            ul.className = 'archive-list-simple';
+
+            groups[year].forEach(post => {
+              const li = document.createElement('li');
+
+              // structure: Title (link), then inline meta: type, author, date
+              const a = document.createElement('a');
+              a.href = post.path;
+              a.className = 'archive-link';
+              a.textContent = post.title;
+
+              const meta = document.createElement('span');
+              meta.className = 'archive-meta-inline';
+              // order: , jenis bacaan, nama penulis, tanggal
+              meta.innerHTML = `${post.type ? (post.type + ',') : ''} ${post.author ? (post.author + ',') : ''} <span class="archive-meta-date">${fmtDate(post.date)}</span>`;
+
+              li.appendChild(a);
+              li.appendChild(meta);
+              ul.appendChild(li);
+            });
+
+            sec.appendChild(ul);
+            OUT.appendChild(sec);
+          });
+
+        } catch (err) {
+          console.error(err);
+          showEmpty('Terjadi kesalahan saat memuat daftar. Cek console.');
+        }
+      }
+
+      document.addEventListener('DOMContentLoaded', load);
+    })();
+  </script>
+</body>
+</html>
